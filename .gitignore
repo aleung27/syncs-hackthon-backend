@@ -1,7 +1,1 @@
-*
-!index.js
-!package.json
-!package-lock.json
-!.git
-!README.md
-!.gitignore
+node_modules
