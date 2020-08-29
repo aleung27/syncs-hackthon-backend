@@ -7,6 +7,8 @@ const cors = require("cors");
 const PORT = 3030;
 const WIDTH = 1200;
 const HEIGHT = 800;
+const evaPFP =
+  "https://cdn.discordapp.com/attachments/747990497091518557/749221522740346890/eva-01-01.png";
 
 var users = [];
 // Users is of the form
@@ -17,11 +19,10 @@ var users = [];
 //    "y": y,
 // }
 
-// Store custom user sprites
 var imgURLs = [
-  "https://www.w3schools.com/images/lamp.jpg",
-  "https://www.w3schools.com/images/lamp.jpg",
-  "https://www.w3schools.com/images/lamp.jpg",
+  evaPFP,
+  evaPFP,
+  evaPFP,
   "https://www.w3schools.com/images/lamp.jpg",
   "https://www.w3schools.com/images/lamp.jpg",
   "https://www.w3schools.com/images/lamp.jpg",
@@ -36,6 +37,13 @@ var rooms = ["FV12"];
 const emitAll = () => {
   sockets.forEach((s) => {
     s.emit("position", users);
+  });
+};
+
+// Emits new position to all sockets
+const emitAllImage = () => {
+  sockets.forEach((s) => {
+    s.emit("image", users);
   });
 };
 
@@ -56,7 +64,8 @@ io.on("connection", (socket) => {
     userImg: imgURLs[userID],
   });
 
-  // Tell the connected user their id & emit position
+  emitAllImage();
+  // Tell the connected user their id & emit all positions
   socket.emit("id", userID);
   socket.emit("position", users);
 
