@@ -18,12 +18,14 @@ var users = [];
 // }
 
 // Store custom user sprites
-var imgURLs = ["https://www.w3schools.com/images/lamp.jpg", 
-"https://www.w3schools.com/images/lamp.jpg",
-"https://www.w3schools.com/images/lamp.jpg",
-"https://www.w3schools.com/images/lamp.jpg", 
-"https://www.w3schools.com/images/lamp.jpg",
-"https://www.w3schools.com/images/lamp.jpg"]; // Please add image URLs
+var imgURLs = [
+  "https://www.w3schools.com/images/lamp.jpg",
+  "https://www.w3schools.com/images/lamp.jpg",
+  "https://www.w3schools.com/images/lamp.jpg",
+  "https://www.w3schools.com/images/lamp.jpg",
+  "https://www.w3schools.com/images/lamp.jpg",
+  "https://www.w3schools.com/images/lamp.jpg",
+]; // Please add image URLs
 
 // Stores all the sockets
 var sockets = [];
@@ -34,13 +36,6 @@ var rooms = ["FV12"];
 const emitAll = () => {
   sockets.forEach((s) => {
     s.emit("position", users);
-  });
-};
-
-// Emits new position to all sockets
-const emitAllImage = () => {
-  sockets.forEach((s) => {
-    s.emit("image", users);
   });
 };
 
@@ -58,13 +53,12 @@ io.on("connection", (socket) => {
     username: null,
     x: Math.random() * WIDTH,
     y: Math.random() * HEIGHT,
-    userImg: imgURLs[userID]
+    userImg: imgURLs[userID],
   });
-  emitAllImage();
-  // Tell the connected user their id & emit all positions
+
+  // Tell the connected user their id & emit position
   socket.emit("id", userID);
   socket.emit("position", users);
-
 
   // Movement commands
   socket.on("move", (data) => {
