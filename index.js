@@ -10,6 +10,7 @@ var users = [];
 // Users is of the form
 // {
 //    "id": id,
+//    "username": username
 //    "x": x,
 //    "y": y,
 // }
@@ -35,6 +36,7 @@ io.on("connection", (socket) => {
   sockets.push(socket);
   users.push({
     id: users.length,
+    username: null,
     x: Math.random() * WIDTH,
     y: Math.random() * HEIGHT,
   });
@@ -63,6 +65,10 @@ io.on("connection", (socket) => {
         emitAll();
         break;
     }
+  });
+
+  socket.on("setName", (data) => {
+    users[data.id].username = data.username;
   });
 
   socket.on("disconnect", () => {
