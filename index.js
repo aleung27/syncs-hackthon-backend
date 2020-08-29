@@ -2,6 +2,8 @@ var app = require("express")();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http);
 
+const cors = require("cors");
+
 const PORT = 3030;
 const WIDTH = 1200;
 const HEIGHT = 800;
@@ -17,6 +19,8 @@ var users = [];
 
 // Stores all the sockets
 var sockets = [];
+
+var rooms = ["FV12"];
 
 // Emits new position to all sockets
 const emitAll = () => {
@@ -75,4 +79,8 @@ io.on("connection", (socket) => {
     console.log("Disconnected");
     // TODO: remove user and socket
   });
+});
+
+app.get("/rooms", cors(), (req, res) => {
+  return res.send(rooms);
 });
