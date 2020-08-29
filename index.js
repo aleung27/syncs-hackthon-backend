@@ -59,8 +59,8 @@ io.on("connection", (socket) => {
   users.push({
     id: userID,
     username: null,
-    x: Math.random() * WIDTH,
-    y: Math.random() * HEIGHT,
+    x: Math.random() * (WIDTH - 200) + 100,
+    y: Math.random() * (HEIGHT - 200) + 100,
     userImg: imgURLs[userID],
   });
 
