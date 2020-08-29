@@ -13,8 +13,6 @@ var peerConnectionConfig = {
     ]
 };
 
-
-
 function pageReady() {
 
     local_audio = document.querySelector('#localAudio')
@@ -28,19 +26,32 @@ function pageReady() {
             .then(getUserMediaSuccess)
             .then(function(){
 
-                socket = io.connect();
+                socket = io.connect("https://192.168.1.70:3030");
                 socket.on('signal', gotMessageFromServer);    
 
                 socket.on('connect', function(){
 
                     socketId = socket.id;
-
+                    window.socketId = socket.id;
                     socket.on('user-left', function(id){
                         var audio = document.querySelector('[data-socket="'+ id +'"]');
                         var parentDiv = audio.parentElement;
                         audio.parentElement.parentElement.removeChild(parentDiv);
                     });
 
+                    socket.on('volume-change', function(amounts){
+                        console.log(amounts);
+                        for (var id in amounts) {
+                            var amount = amounts[id];
+                            var audio = document.querySelector('[data-socket="'+ id +'"]');
+                            if (audio) {
+                                audio.volume = amount;
+                                console.log("Volume: " + amount);
+                            }
+                            
+                        }
+
+                    });
 
                     socket.on('user-joined', function(id, count, clients){
                         clients.forEach(function(socketListId) {
