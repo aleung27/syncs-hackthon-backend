@@ -1,6 +1,26 @@
 var app = require("express")();
-var http = require("http").createServer(app);
-var io = require("socket.io")(http);
+var express = require('express');
+
+//var http = require("http").createServer(app);
+var https = require('https');
+
+var fs = require('fs');
+var socket = require('socket.io')
+var privateKey = fs.readFileSync('key.pem', 'utf-8');
+var certificate = fs.readFileSync('cert.pem', 'utf-8');
+var passphrase = '1234';
+var credentials = { key: privateKey, cert: certificate, passphrase: passphrase };
+
+//var io = require("socket.io")(http);
+var httpsServer = https.createServer(credentials, app);
+
+var io = socket(httpsServer);
+
+app.use(express.static(__dirname + '/public'));
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
 const cors = require("cors");
 
@@ -44,16 +64,31 @@ const emitAll = () => {
 // Emits new position to all sockets
 const emitAllImage = () => {
     sockets.forEach((s) => {
+      console.log("Emit All Image")
       s.emit("image", {userData: users, bgURL: bgURLs[bg], width: WIDTH, height: HEIGHT, imageData: images});
     });
   };
 
-http.listen(PORT, () => {
-  console.log("listening...");
-});
+
 
 io.on("connection", (socket) => {
   console.log("connected");
+
+  console.log("new")
+	io.sockets.emit("user-joined", socket.id, io.engine.clientsCount, Object.keys(io.sockets.clients().sockets));
+
+	socket.on('signal', (toId, message) => {
+		io.to(toId).emit('signal', socket.id, message);
+  	});
+
+    socket.on("message", function(data){
+		io.sockets.emit("broadcast-message", socket.id, data);
+    })
+
+	socket.on('disconnect', function() {
+		io.sockets.emit("user-left", socket.id);
+	})
+
   var userID = users.length;
   // Add the socket and the users to the list
   sockets.push(socket);
@@ -62,7 +97,8 @@ io.on("connection", (socket) => {
     username: null,
     x: Math.random() * (WIDTH - 200) + 100,
     y: Math.random() * (HEIGHT - 200) + 100,
-    userImg: imgURLs[Math.random() * imgURLs.length],
+    userImg: imgURLs[userID % 4]
+    //userImg: imgURLs[Math.random() * imgURLs.length],
   });
 
   emitAllImage();
@@ -72,6 +108,7 @@ io.on("connection", (socket) => {
 
   // Movement commands
   socket.on("move", (data) => {
+    console.log("Move Received")
     switch (data.direction) {
       case "left":
         users[data.id].x -= 5;
@@ -104,4 +141,8 @@ io.on("connection", (socket) => {
 
 app.get("/rooms", cors(), (req, res) => {
   return res.send(rooms);
+});
+
+httpsServer.listen(PORT, () => {
+  console.log("listening...");
 });
