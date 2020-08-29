@@ -133,6 +133,7 @@ io.on("connection", (socket) => {
   // Tell the connected user their id & emit all positions
   socket.emit("id", userID);
   socket.emit("position", users);
+  socket.emit("getComment", comments);
 
   // Movement commands
   socket.on("move", (data) => {
