@@ -16,11 +16,15 @@ var users = [];
 //    "x": x,
 //    "y": y,
 // }
-
+var images = [];
 // Store custom user sprites
-var imgURLs = ["https://www.w3schools.com/images/lamp.jpg", 
-"https://www.w3schools.com/images/lamp.jpg",
-"https://www.w3schools.com/images/lamp.jpg",
+var evaPFP =  "https://cdn.discordapp.com/attachments/747990497091518557/749221522740346890/eva-01-01.png";
+var bg = "atlas"
+var bgURLs = {"atlas" : "https://cdn.discordapp.com/attachments/747990497091518557/749222951865286676/networking_event-01-01.png"}
+
+var imgURLs = [evaPFP, 
+  evaPFP,
+  evaPFP,
 "https://www.w3schools.com/images/lamp.jpg", 
 "https://www.w3schools.com/images/lamp.jpg",
 "https://www.w3schools.com/images/lamp.jpg"]; // Please add image URLs
@@ -40,7 +44,7 @@ const emitAll = () => {
 // Emits new position to all sockets
 const emitAllImage = () => {
   sockets.forEach((s) => {
-    s.emit("image", users);
+    s.emit("image", {userData: users, bgURL: bgURLs[bg], width: WIDTH, height: HEIGHT});
   });
 };
 
@@ -60,6 +64,7 @@ io.on("connection", (socket) => {
     y: Math.random() * HEIGHT,
     userImg: imgURLs[userID]
   });
+
   emitAllImage();
   // Tell the connected user their id & emit all positions
   socket.emit("id", userID);
