@@ -89,7 +89,7 @@ const emitAllImage = () => {
 };
 
 const emitAllComments = () => {
-  socket.forEach((s) => {
+  sockets.forEach((s) => {
     s.emit("getComment", comments);
   });
 };
