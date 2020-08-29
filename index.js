@@ -17,6 +17,14 @@ var users = [];
 //    "y": y,
 // }
 
+// Store custom user sprites
+var imgURLs = ["https://www.w3schools.com/images/lamp.jpg", 
+"https://www.w3schools.com/images/lamp.jpg",
+"https://www.w3schools.com/images/lamp.jpg",
+"https://www.w3schools.com/images/lamp.jpg", 
+"https://www.w3schools.com/images/lamp.jpg",
+"https://www.w3schools.com/images/lamp.jpg"]; // Please add image URLs
+
 // Stores all the sockets
 var sockets = [];
 
@@ -29,25 +37,34 @@ const emitAll = () => {
   });
 };
 
+// Emits new position to all sockets
+const emitAllImage = () => {
+  sockets.forEach((s) => {
+    s.emit("image", users);
+  });
+};
+
 http.listen(PORT, () => {
   console.log("listening...");
 });
 
 io.on("connection", (socket) => {
   console.log("connected");
-
+  var userID = users.length;
   // Add the socket and the users to the list
   sockets.push(socket);
   users.push({
-    id: users.length,
+    id: userID,
     username: null,
     x: Math.random() * WIDTH,
     y: Math.random() * HEIGHT,
+    userImg: imgURLs[userID]
   });
-
+  emitAllImage();
   // Tell the connected user their id & emit all positions
-  socket.emit("id", users.length - 1);
+  socket.emit("id", userID);
   socket.emit("position", users);
+
 
   // Movement commands
   socket.on("move", (data) => {
