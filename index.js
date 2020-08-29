@@ -1,28 +1,8 @@
 var app = require("express")();
-var express = require('express');
-
 var http = require("http").createServer(app);
-var https = require('https');
-var fs = require('fs');
 var io = require("socket.io")(http);
-var socket = require('socket.io')
 
 const cors = require("cors");
-
-var privateKey = fs.readFileSync('key.pem', 'utf8');
-var certificate = fs.readFileSync('cert.pem', 'utf8');
-var passphrase = '1234';
-var credentials = { key: privateKey, cert: certificate, passphrase: passphrase };
-
-//var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
-var io = socket(httpsServer);
-
-app.use(express.static(__dirname + '/public'));
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
 
 const PORT = 3030;
 const WIDTH = 1200;
@@ -39,14 +19,17 @@ var users = [];
 //    "y": y,
 // }
 
-var imgURLs = [
+var images = [];
+// Store custom user sprites
+var bg = "atlas"
+var bgURLs = {"atlas" : "https://cdn.discordapp.com/attachments/747990497091518557/749222951865286676/networking_event-01-01.png"}
+
+var imgURLs = [evaPFP, 
   evaPFP,
   evaPFP,
-  evaPFP,
-  "https://www.w3schools.com/images/lamp.jpg",
-  "https://www.w3schools.com/images/lamp.jpg",
-  "https://www.w3schools.com/images/lamp.jpg",
-]; // Please add image URLs
+"https://www.w3schools.com/images/lamp.jpg", 
+"https://www.w3schools.com/images/lamp.jpg",
+"https://www.w3schools.com/images/lamp.jpg"]; // Please add image URLs
 
 // Stores all the sockets
 var sockets = [];
@@ -62,33 +45,17 @@ const emitAll = () => {
 
 // Emits new position to all sockets
 const emitAllImage = () => {
-  sockets.forEach((s) => {
-    s.emit("image", users);
-  });
-};
+    sockets.forEach((s) => {
+      s.emit("image", {userData: users, bgURL: bgURLs[bg], width: WIDTH, height: HEIGHT, imageData: images});
+    });
+  };
 
-httpsServer.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log("listening...");
 });
 
 io.on("connection", (socket) => {
   console.log("connected");
-
-  console.log("new")
-	io.sockets.emit("user-joined", socket.id, io.engine.clientsCount, Object.keys(io.sockets.clients().sockets));
-
-	socket.on('signal', (toId, message) => {
-		io.to(toId).emit('signal', socket.id, message);
-  	});
-
-    socket.on("message", function(data){
-		io.sockets.emit("broadcast-message", socket.id, data);
-    })
-
-	socket.on('disconnect', function() {
-		io.sockets.emit("user-left", socket.id);
-	})
-
   var userID = users.length;
   // Add the socket and the users to the list
   sockets.push(socket);
