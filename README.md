@@ -7,7 +7,7 @@ From professional networking events, social club events and even just for genera
 ❤️❤️❤️ Made with love ❤️❤️❤️:
 - [Adam Leung](https://github.com/aleung27)
 - Sean Gong
-- Allen Hui
+- [Allen Hui](https://github.com/ZijunH)
 - [Eva Liu](https://github.com/evaliu-jpg)
 - Judd Zhan
 - [Sashi Peiris](https://github.com/lichbanelb)
